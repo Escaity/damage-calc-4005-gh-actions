@@ -1,20 +1,33 @@
 name: Damage Calculation Test
-
+# ワークフローを実行する条件を指定
 on:
   push:
-    branches: [ main-2022 ]
+  # main-2022にコミットが push されたときに実行
+    branches: [main-2022]
 
 jobs:
   build:
-  
+  # ジョブで使う仮想マシン
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js v16.14.2
-      uses: actions/setup-node@v1
-      with:
-        node-version: '16.14.2'
-        
-    - run: yarn install
-    - run: yarn test
+    # ワークフローがこのリポジトリにアクセスするための準備
+      - uses: actions/checkout@v2
+      - name: Use Node.js v16.14.2
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.14.2'
+
+      - run: yarn install
+      - name: Install JUnit coverage reporter
+        run: yarn add --dev jest-junit
+      - name: Run tests with JUnit as reporter
+        run: npx jest --ci --runInBand --reporters=default --reporters=jest-junit
+        env:
+        # JUnit形式のテストの結果を出力
+          JEST_JUNIT_OUTPUT_DIR: "./junit/test-results.xml"
+      - uses: actions/upload-artifacts@v2
+        with:
+          path: ./junit/test-results.xml
+        # 前のステップでジョブが失敗してもこのステップは実行させる
+        if: always()
