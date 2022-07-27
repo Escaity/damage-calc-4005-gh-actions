@@ -26,7 +26,7 @@ jobs:
         env:
         # JUnit形式のテストの結果を出力
           JEST_JUNIT_OUTPUT_DIR: "./junit/test-results.xml"
-      - uses: actions/upload-artifacts@v2
+      - uses: actions/upload-artifact@v2
         with:
           path: ./junit/test-results.xml
         # 前のステップでジョブが失敗してもこのステップは実行させる
